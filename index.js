@@ -21,15 +21,14 @@ function loadContacts() {
 }
 
 function displayContacts(contactsToDisplay = null) {
-
     const contactList = document.getElementById('list');
     const contacts = loadContacts();
     const displayContacts = contactsToDisplay || contacts;
 
     contactList.innerHTML = '';
 
-    for(let i = 0; i < displayContacts.length; i++) {
-        let contact = displayContacts[i]
+    for (let i = 0; i < displayContacts.length; i++) {
+        let contact = displayContacts[i];
         contactList.innerHTML += `
             <div class="contact-card">
                 <h3 id="namedisplay">${contact.nameValue}</h3>
@@ -37,46 +36,39 @@ function displayContacts(contactsToDisplay = null) {
                 <p class="info">${contact.emailValue}</p>
                 <p class="info">${contact.addressValue}</p>
                 <button class="btn-view" onclick="editMode(${i})">Edit</button> 
+                <button class="btn-view" onclick="deleteContact(${i})">Delete</button>
             </div>
-        `
+        `;
     }
 }
 
 function openAdd() {
-    console.log("hi")
-    overlay.style.display = "flex"; // Abre el overlay!
-
+    overlay.style.display = "flex";
 }
 
 function addContact() {
-    let nameValue = nameInput.value
-    let phoneValue = phoneInput.value
-    let emailValue = emailInput.value
-    let addressValue = address.value
+    let nameValue = nameInput.value;
+    let phoneValue = phoneInput.value;
+    let emailValue = emailInput.value;
+    let addressValue = address.value;
 
-    if(nameValue === "" && phoneValue === "" && emailValue === "" && addressValue === "") {
-        alert("Llena los campos!")
+    if (nameValue === "" || phoneValue === "" || emailValue === "" || addressValue === "") {
+        alert("Please fill in all fields!");
     } else {
-
-        overlay.style.display = "none"; //Desactiva el overlay - lo cierra
-        console.log("Sent!");
+        overlay.style.display = "none"; 
 
         const newContact = { nameValue, phoneValue, emailValue, addressValue };
-
         const contacts = loadContacts();
-
         contacts.push(newContact);
-    
+
         saveContacts(contacts);
-        console.log(newContact)
-        displayContacts();
+        displayContacts(); 
 
-        nameInput.value = ""
-        phoneInput.value = ""
-        emailInput.value = ""
-        address.value = ""
+        nameInput.value = "";
+        phoneInput.value = "";
+        emailInput.value = "";
+        address.value = "";
     }
-
 }
 
 function closeOver() {
@@ -93,18 +85,22 @@ function editMode(index) {
     newEmailI.value = contact.emailValue;
     newAddressI.value = contact.addressValue;
 
-    let updateButton = document.getElementById("update")
+    const updateButton = document.getElementById("update");
+    updateButton.onclick = function () {
+        updateContact(index);
+    };
+}
 
-    updateButton.addEventListener("click", function() {
-        updateContact(index); 
-    });
-
-     
+function deleteContact(index) {
+    const contacts = loadContacts();
+    contacts.splice(index, 1); 
+    saveContacts(contacts); 
+    displayContacts(); 
 }
 
 function updateContact(index) {
-
     const contacts = loadContacts();
+
     const updatedContact = {
         nameValue: newNameI.value,
         phoneValue: newPhoneI.value,
@@ -113,9 +109,12 @@ function updateContact(index) {
     };
 
     contacts[index] = updatedContact;
+
     saveContacts(contacts);
+
     displayContacts();
 
+    closeEdit();
 }
 
 function closeEdit() {
@@ -123,15 +122,14 @@ function closeEdit() {
 }
 
 function filterContacts() {
-    
-    const query = document.getElementById("search").value.toLowerCase(); 
+    const query = document.getElementById("search").value.toLowerCase();
     const contacts = loadContacts();
 
-    const filteredContacts = contacts.filter(contact => 
+    const filteredContacts = contacts.filter(contact =>
         contact.nameValue.toLowerCase().includes(query)
     );
+
     displayContacts(filteredContacts);
 }
-    
-displayContacts();
 
+displayContacts();
